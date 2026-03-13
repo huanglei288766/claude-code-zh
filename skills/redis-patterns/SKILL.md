@@ -80,9 +80,14 @@ public UserVO getUserWithMutex(Long id) {
             redis.delete(lockKey);
         }
     } else {
-        // 未获取到锁，等待后重试
-        Thread.sleep(50);
-        return getUserWithMutex(id);
+        // 未获取到锁，短暂等待后重试（有限次数，防止无限递归）
+        int maxRetry = 3;
+        for (int i = 0; i < maxRetry; i++) {
+            Thread.sleep(50);
+            cached = redis.opsForValue().get(key);
+            if (cached != null) return JSON.parseObject(cached, UserVO.class);
+        }
+        throw new ServiceException("获取数据超时，请重试");
     }
 }
 

@@ -85,6 +85,7 @@ public class Order {
             throw new DomainException("已完成的订单不可取消");
         }
         this.status = OrderStatus.CANCELLED;
+        this.cancelReason = reason;
     }
 
     private static Money calculateTotal(List<OrderItem> items) {
@@ -271,4 +272,3 @@ public class Order {
 ## 相关规则
 
 - [java-coding-style](../../rules/java-coding-style.md)
-- [api-design-cn](../../rules/api-design-cn.md)
